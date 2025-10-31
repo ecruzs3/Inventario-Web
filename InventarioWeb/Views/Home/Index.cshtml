@@ -1,0 +1,40 @@
+﻿@{
+    ViewData["HideNavbar"] = false;
+    ViewData["Title"] = "Dashboard de Inventario";
+}
+
+<div class="container mt-4">
+    <h1 class="text-dark fw-bold mb-4">Inicio de Inventario</h1>
+
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Productos</h5>
+                    <p class="card-text">Gestiona los productos del inventario.</p>
+                    <a asp-controller="Productos" asp-action="Index" class="btn btn-outline-success">Ver Productos</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Proveedores</h5>
+                    <p class="card-text">Administra tus proveedores.</p>
+                    <a asp-controller="Proveedores" asp-action="Index" class="btn btn-outline-success">Ver Proveedores</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Movimientos</h5>
+                    <p class="card-text">Entradas y salidas de inventario.</p>
+                    <a asp-controller="MovimientosInventario" asp-action="Index" class="btn btn-outline-success">Ver Movimientos</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

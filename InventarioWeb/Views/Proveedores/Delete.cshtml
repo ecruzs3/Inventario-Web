@@ -1,0 +1,14 @@
+﻿@model InventarioWeb.Models.Proveedor
+@{
+    ViewData["Title"] = "Eliminar Proveedor";
+}
+
+<h2 class="text-danger">@ViewData["Title"]</h2>
+
+<p>¿Está seguro que desea eliminar el proveedor <strong>@Model.Nombre</strong>?</p>
+
+<form asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

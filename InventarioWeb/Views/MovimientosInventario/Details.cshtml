@@ -1,0 +1,16 @@
+﻿@model InventarioWeb.Models.MovimientoInventario
+@{
+    ViewData["Title"] = "Detalle Movimiento";
+}
+
+<h2 class="text-primary">@ViewData["Title"]</h2>
+
+<table class="table table-bordered mt-3">
+    <tr><th>Producto</th><td>@Model.Producto</td></tr>
+    <tr><th>Tipo Movimiento</th><td>@Model.TipoMovimiento</td></tr>
+    <tr><th>Cantidad</th><td>@Model.Cantidad</td></tr>
+    <tr><th>Fecha</th><td>@Model.Fecha.ToShortDateString()</td></tr>
+    <tr><th>Nota</th><td>@Model.Nota</td></tr>
+</table>
+
+<a asp-action="Index" class="btn btn-secondary">Volver</a>

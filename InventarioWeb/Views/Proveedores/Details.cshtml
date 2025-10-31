@@ -1,0 +1,18 @@
+﻿@model InventarioWeb.Models.Proveedor
+@{
+    ViewData["Title"] = "Detalle Proveedor";
+}
+
+<h2 class="text-primary">@ViewData["Title"]</h2>
+
+<table class="table table-bordered mt-3">
+    <tr><th>Nombre</th><td>@Model.Nombre</td></tr>
+    <tr><th>Tipo</th><td>@Model.TipoProveedor</td></tr>
+    <tr><th>Contacto</th><td>@Model.Contacto</td></tr>
+    <tr><th>Email</th><td>@Model.Email</td></tr>
+    <tr><th>Teléfono</th><td>@Model.Telefono</td></tr>
+    <tr><th>Estado</th><td>@Model.Estado</td></tr>
+    <tr><th>Fecha Creación</th><td>@Model.FechaCreacion.ToShortDateString()</td></tr>
+</table>
+
+<a asp-action="Index" class="btn btn-secondary">Volver</a>

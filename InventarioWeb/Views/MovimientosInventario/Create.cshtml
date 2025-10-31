@@ -1,0 +1,38 @@
+﻿@model InventarioWeb.Models.MovimientoInventario
+@{
+    ViewData["Title"] = "Nuevo Movimiento";
+}
+
+<h2 class="text-primary">@ViewData["Title"]</h2>
+
+<form asp-action="Create" class="mt-3">
+    <div class="mb-3">
+        <label asp-for="Producto" class="form-label"></label>
+        <input asp-for="Producto" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="TipoMovimiento" class="form-label"></label>
+        <select asp-for="TipoMovimiento" class="form-select">
+            <option>Entrada</option>
+            <option>Salida</option>
+            <option>Ajuste</option>
+            <option>Devolución</option>
+            <option>Transferencia</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Cantidad" class="form-label"></label>
+        <input asp-for="Cantidad" type="number" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Fecha" class="form-label"></label>
+        <input asp-for="Fecha" type="date" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Nota" class="form-label"></label>
+        <textarea asp-for="Nota" class="form-control"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-success">Guardar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>
