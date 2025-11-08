@@ -20,11 +20,16 @@
         <tr>
             <th>Código</th>
             <th>Nombre</th>
-            <th>Categoría</th>
+            <th>Descripción</th>
             <th>Proveedor</th>
             <th>Stock</th>
+            <th>Stock Mínimo</th>
+            <th>Precio Compra</th>
             <th>Precio Venta</th>
+            <th>Estado</th>
             <th>Fecha Ingreso</th>
+            <th>Fecha Vencimiento</th>
+            <th>Fecha Actualizado</th>
             <th>Acciones</th>
         </tr>
     </thead>
@@ -32,13 +37,27 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td>@item.Codigo</td>
+                <td>@item.Id</td>
                 <td>@item.Nombre</td>
-                <td>@item.Categoria</td>
-                <td>@item.Proveedor</td>
+                <td>@item.Descripcion</td>
+                <td>@(item.Proveedor?.Nombre ?? "-")</td>
                 <td>@item.Stock</td>
+                <td>@item.StockMinimo</td>
+                <td>@item.PrecioCompra.ToString("C")</td>
                 <td>@item.PrecioVenta.ToString("C")</td>
-                <td>@item.FechaIngreso.ToShortDateString()</td>
+                <td>
+                    @if (item.Estado)
+                    {
+                        <span class="badge bg-success">Activo</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Inactivo</span>
+                    }
+                </td>
+                <td>@(item.FechaIngreso?.ToString("yyyy-MM-dd") ?? "-")</td>
+                <td>@(item.FechaVencimiento?.ToString("yyyy-MM-dd") ?? "-")</td>
+                <td>@(item.ActualizadoEn?.ToString("yyyy-MM-dd") ?? "-")</td>
                 <td class="text-center">
                     <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm"><i class="bi bi-eye"></i></a>
                     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i></a>
@@ -48,3 +67,4 @@
         }
     </tbody>
 </table>
+

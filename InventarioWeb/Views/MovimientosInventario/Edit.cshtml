@@ -1,4 +1,6 @@
-﻿@model InventarioWeb.Models.MovimientoInventario
+﻿@*NO SE USA*@
+
+@model InventarioWeb.Models.MovimientoInventario
 
 @{
     Layout = "_Layout";
@@ -27,11 +29,6 @@
                 <label asp-for="Cantidad" class="control-label"></label>
                 <input asp-for="Cantidad" class="form-control" />
                 <span asp-validation-for="Cantidad" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Fecha" class="control-label"></label>
-                <input asp-for="Fecha" class="form-control" />
-                <span asp-validation-for="Fecha" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Nota" class="control-label"></label>

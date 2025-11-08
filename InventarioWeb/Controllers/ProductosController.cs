@@ -1,64 +1,159 @@
 ﻿using InventarioWeb.Data;
 using InventarioWeb.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
- 
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace InventarioWeb.Controllers
 {
     public class ProductosController : Controller
     {
-        public IActionResult Index() => View(AppDbContext.Productos);
+        private readonly AppDbContext _context;
 
-        public IActionResult Details(int id)
+        public ProductosController(AppDbContext context)
         {
-            var producto = AppDbContext.Productos.FirstOrDefault(p => p.Id == id);
+            _context = context;
+        }
+
+        // GET: /Productos
+        public async Task<IActionResult> Index()
+        {
+            var lista = await _context.Productos
+                                      .AsNoTracking()
+                                      .Include(p => p.Proveedor)
+                                      .ToListAsync();
+            return View(lista);
+        }
+
+        // GET: /Productos/Details/
+        public async Task<IActionResult> Details(int id)
+        {
+            var producto = await _context.Productos
+                                         .AsNoTracking()
+                                         .FirstOrDefaultAsync(p => p.Id == id);
+
             if (producto == null) return NotFound();
             return View(producto);
         }
 
-        public IActionResult Create() => View();
-
-        [HttpPost]
-        public IActionResult Create(Producto producto)
+        // GET: /Productos/Create
+        public async Task<IActionResult> Create()
         {
-            producto.Id = AppDbContext.Productos.Max(p => p.Id) + 1;
-            AppDbContext.Productos.Add(producto);
+            ViewBag.Proveedores = new SelectList(
+                await _context.Proveedores
+                    .AsNoTracking()
+                    .OrderBy(p => p.Nombre)
+                    .ToListAsync(),
+                "Id", "Nombre");
+
+            return View();
+        }
+
+        // POST: /Productos/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Producto producto)
+        {
+            /*if (!ModelState.IsValid)
+            {*/
+                /*ViewBag.Proveedores = new SelectList(
+                    await _context.Proveedores.AsNoTracking().ToListAsync(),
+                    "Id", "Nombre", producto.ProveedorId);
+                return View(producto);*/
+            /*}*/
+
+            producto.FechaIngreso = DateTime.Now;
+
+            _context.Add(producto);
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Edit(int id)
+
+        // GET: /Productos/Edit/
+        public async Task<IActionResult> Edit(int id)
         {
-            var producto = AppDbContext.Productos.FirstOrDefault(p => p.Id == id);
-            if (producto == null) return NotFound();
+            var producto = await _context.Productos.FindAsync(id);
+            if (producto == null) 
+                return NotFound();
+
+            ViewBag.Proveedores = new SelectList(
+                await _context.Proveedores.AsNoTracking()
+                .OrderBy(p => p.Nombre)
+                .Select(p => new { p.Id, p.Nombre })
+                .ToListAsync(),
+            "Id", "Nombre", producto.ProveedorId);
+
             return View(producto);
         }
 
+        // POST: /Productos/Edit/
         [HttpPost]
-        public IActionResult Edit(Producto producto)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Producto producto)
         {
-            var original = AppDbContext.Productos.FirstOrDefault(p => p.Id == producto.Id);
-            if (original == null) return NotFound();
+            if (id != producto.Id) 
+                return BadRequest();
 
-            AppDbContext.Productos.Remove(original);
-            AppDbContext.Productos.Add(producto);
+
+            /*if (!ModelState.IsValid)
+            {
+                var errores = string.Join(" | ", ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage));
+                Console.WriteLine("ERRORES: " + errores);
+                return View(producto);
+            }*/
+
+
+            var productoExistente = await _context.Productos.FindAsync(id);
+            if (productoExistente == null)
+                return NotFound();
+
+            productoExistente.Nombre = producto.Nombre;
+            productoExistente.ProveedorId = producto.ProveedorId;
+            productoExistente.PrecioCompra = producto.PrecioCompra;
+            productoExistente.PrecioVenta = producto.PrecioVenta;
+            productoExistente.Estado = producto.Estado;
+            productoExistente.FechaVencimiento = producto.FechaVencimiento;
+
+            productoExistente.ActualizadoEn = DateTime.Now;
+
+            _context.Update(productoExistente);
+            await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
+
         }
 
-        public IActionResult Delete(int id)
+        // GET: /Productos/Delete/
+        public async Task<IActionResult> Delete(int id)
         {
-            var producto = AppDbContext.Productos.FirstOrDefault(p => p.Id == id);
+            var producto = await _context.Productos
+                                         .AsNoTracking()
+                                         .FirstOrDefaultAsync(p => p.Id == id);
             if (producto == null) return NotFound();
             return View(producto);
         }
 
+        // POST: /Productos/Delete/
         [HttpPost, ActionName("Delete")]
-        public IActionResult DeleteConfirmed(int id)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var producto = AppDbContext.Productos.FirstOrDefault(p => p.Id == id);
-            if (producto != null)
-                AppDbContext.Productos.Remove(producto);
-            return RedirectToAction(nameof(Index));
+            var producto = await _context.Productos.FindAsync(id);
+            try
+            {
+                _context.Productos.Remove(producto);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException)
+            {
+                TempData["Error"] = "No se puede eliminar, únicamente cambiar de estado; existen movimientos asociados.";
+                return RedirectToAction(nameof(Delete), new { id });
+            }
         }
     }
 }

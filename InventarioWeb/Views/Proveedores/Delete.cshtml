@@ -5,9 +5,32 @@
 
 <h2 class="text-danger">@ViewData["Title"]</h2>
 
-<p>¿Está seguro que desea eliminar el proveedor <strong>@Model.Nombre</strong>?</p>
+<div class="alert alert-warning mt-3">
+    <p>¿Está seguro que desea eliminar el proveedor <strong>@Model.Nombre</strong>?</p>
+</div>
 
-<form asp-action="DeleteConfirmed" method="post">
+<table class="table table-bordered mt-3">
+    <tr><th>Dirección</th><td>@Model.Direccion</td></tr>
+    <tr><th>Email</th><td>@Model.Email</td></tr>
+    <tr><th>Teléfono</th><td>@Model.Telefono</td></tr>
+    <tr>
+        <th>Estado</th>
+        <td>
+            @if (Model.Estado)
+            {
+                <span class="badge bg-success">Activo</span>
+            }
+            else
+            {
+                <span class="badge bg-secondary">Inactivo</span>
+            }
+        </td>
+    </tr>
+</table>
+
+<form asp-action="Delete" method="post">
+    @Html.AntiForgeryToken()
+
     <input type="hidden" asp-for="Id" />
     <button type="submit" class="btn btn-danger">Eliminar</button>
     <a asp-action="Index" class="btn btn-secondary">Cancelar</a>

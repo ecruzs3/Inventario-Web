@@ -6,10 +6,11 @@
 <h2 class="text-primary">@ViewData["Title"]</h2>
 
 <table class="table table-bordered mt-3">
-    <tr><th>Producto</th><td>@Model.Producto</td></tr>
+    <tr><th>Movimiento ID</th><td>@Model.Id</td></tr
+    <tr><th>Producto ID</th><td>@Model.ProductoId</td></tr>
     <tr><th>Tipo Movimiento</th><td>@Model.TipoMovimiento</td></tr>
     <tr><th>Cantidad</th><td>@Model.Cantidad</td></tr>
-    <tr><th>Fecha</th><td>@Model.Fecha.ToShortDateString()</td></tr>
+    <tr><th>Fecha Creación</th><td>@(Model.CreadoEn?.ToString("yyyy-MM-dd") ?? "-")</td>
     <tr><th>Nota</th><td>@Model.Nota</td></tr>
 </table>
 

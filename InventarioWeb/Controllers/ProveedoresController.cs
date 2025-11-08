@@ -1,63 +1,122 @@
 ﻿using InventarioWeb.Data;
 using InventarioWeb.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace InventarioWeb.Controllers
 {
     public class ProveedoresController : Controller
     {
-        public IActionResult Index() => View(AppDbContext.Proveedores);
+        private readonly AppDbContext _context;
 
-        public IActionResult Details(int id)
+        public ProveedoresController(AppDbContext context)
         {
-            var proveedor = AppDbContext.Proveedores.FirstOrDefault(p => p.Id == id);
-            if (proveedor == null) return NotFound();
+            _context = context;
+        }
+
+        // GET: /Proveedores
+        public async Task<IActionResult> Index()
+        {
+            var lista = await _context.Proveedores
+                                      .AsNoTracking()
+                                      .ToListAsync();
+            return View(lista);
+        }
+
+        // GET: /Proveedores/Details/
+        public async Task<IActionResult> Details(int id)
+        {
+            var proveedor = await _context.Proveedores
+                                          .AsNoTracking()
+                                          .FirstOrDefaultAsync(p => p.Id == id);
+            if (proveedor == null)
+                return NotFound();
+
             return View(proveedor);
         }
 
+        // GET: /Proveedores/Create
         public IActionResult Create() => View();
 
+        // POST: /Proveedores/Create
         [HttpPost]
-        public IActionResult Create(Proveedor proveedor)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Proveedor proveedor)
         {
-            proveedor.Id = AppDbContext.Proveedores.Max(p => p.Id) + 1;
-            AppDbContext.Proveedores.Add(proveedor);
+            if (!ModelState.IsValid)
+                return View(proveedor);
+
+            proveedor.CreadoEn = DateTime.Now;
+
+            _context.Add(proveedor);
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Edit(int id)
+        // GET: /Proveedores/Edit/
+        public async Task<IActionResult> Edit(int id)
         {
-            var proveedor = AppDbContext.Proveedores.FirstOrDefault(p => p.Id == id);
-            if (proveedor == null) return NotFound();
+            var proveedor = await _context.Proveedores.FindAsync(id);
+            if (proveedor == null)
+                return NotFound();
+
             return View(proveedor);
         }
 
+        // POST: /Proveedores/Edit/
         [HttpPost]
-        public IActionResult Edit(Proveedor proveedor)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Proveedor proveedor)
         {
-            var original = AppDbContext.Proveedores.FirstOrDefault(p => p.Id == proveedor.Id);
-            if (original != null)
-            {
-                AppDbContext.Proveedores.Remove(original);
-                AppDbContext.Proveedores.Add(proveedor);
-            }
+            if (id != proveedor.Id)
+                return BadRequest();
+
+            if (!ModelState.IsValid)
+                return View(proveedor);
+
+            var proveedorExistente = await _context.Proveedores.FindAsync(id);
+            if (proveedorExistente == null)
+                return NotFound();
+
+            proveedorExistente.Nombre = proveedor.Nombre;
+            proveedorExistente.Direccion = proveedor.Direccion;
+            proveedorExistente.Telefono = proveedor.Telefono;
+            proveedorExistente.Email = proveedor.Email;
+            proveedorExistente.Estado = proveedor.Estado; 
+
+            proveedorExistente.ActualizadoEn = DateTime.Now;
+
+            _context.Update(proveedorExistente);
+            await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Delete(int id)
+        // GET: /Proveedores/Delete/
+        public async Task<IActionResult> Delete(int id)
         {
-            var proveedor = AppDbContext.Proveedores.FirstOrDefault(p => p.Id == id);
-            if (proveedor == null) return NotFound();
+            var proveedor = await _context.Proveedores
+                                          .AsNoTracking()
+                                          .FirstOrDefaultAsync(p => p.Id == id);
+            if (proveedor == null)
+                return NotFound();
+
             return View(proveedor);
         }
 
+        // POST: /Proveedores/Delete/
         [HttpPost, ActionName("Delete")]
-        public IActionResult DeleteConfirmed(int id)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var proveedor = AppDbContext.Proveedores.FirstOrDefault(p => p.Id == id);
+            var proveedor = await _context.Proveedores.FindAsync(id);
             if (proveedor != null)
-                AppDbContext.Proveedores.Remove(proveedor);
+            {
+                _context.Proveedores.Remove(proveedor);
+                await _context.SaveChangesAsync();
+            }
+
             return RedirectToAction(nameof(Index));
         }
     }
